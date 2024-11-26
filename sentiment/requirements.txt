@@ -1,8 +1,0 @@
-selenium
-webdriver-manager
-pandas
-nltk
-textblob
-transformers
-python-dotenv
-schedule
