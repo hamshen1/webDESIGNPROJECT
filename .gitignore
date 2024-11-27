@@ -72,5 +72,5 @@ node_modules/
 sentiment/venv
 sentiment/__pycache__
 sentiment/.env
-
+sentiment/screenshots
 cookies.json
