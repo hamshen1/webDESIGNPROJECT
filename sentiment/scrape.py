@@ -3,56 +3,24 @@
 import os
 import asyncio
 import csv
-import json
 import logging
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
-from config import SELECTORS, COOKIES_PATH, SCREENSHOTS_DIR
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
+from config import SELECTORS, SCREENSHOTS_DIR
 from helpers import take_screenshot, create_screenshot_folder
 
 class XComScraper:
     """
     A class to handle scraping topics from x.com's news page.
-    It uses saved cookies for authentication to maintain an authenticated session.
+    It assumes an authenticated session.
     """
 
-    def __init__(self):
+    def __init__(self, page):
+        self.page = page
+        self.context = self.page.context
+        self.browser = self.context.browser
         self.selectors = SELECTORS
-        self.cookies_path = COOKIES_PATH
         self.screenshots_dir = SCREENSHOTS_DIR
         self.folder_path = None
-        self.browser = None
-        self.context = None
-        self.page = None
-
-    async def setup_browser_with_cookies(self, playwright):
-        """
-        Initialize the Playwright browser and context, and load cookies for authentication.
-        """
-        self.browser = await playwright.chromium.launch(headless=True)
-        self.context = await self.browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"
-                       " Chrome/91.0.4472.124 Safari/537.36",
-            viewport={"width": 1280, "height": 800}
-        )
-
-        # Load cookies to maintain session
-        if os.path.exists(self.cookies_path):
-            logging.info("Loading cookies for authenticated session...")
-            try:
-                with open(self.cookies_path, "r") as f:
-                    cookies = json.load(f)
-                # Ensure cookies have the correct domain
-                # Optionally, adjust domains here if necessary
-                await self.context.add_cookies(cookies)
-                logging.info("Cookies loaded successfully.")
-            except Exception as e:
-                logging.error(f"Failed to load cookies: {e}")
-                raise
-        else:
-            logging.error(f"Cookies file '{self.cookies_path}' not found. Please run login.py first.")
-            raise FileNotFoundError(f"Cookies file '{self.cookies_path}' not found.")
-
-        self.page = await self.context.new_page()
 
     async def navigate_to_news_page(self):
         """
@@ -68,27 +36,9 @@ class XComScraper:
             await take_screenshot(self.page, "news_page_error", self.folder_path)
             raise
 
-    async def verify_authenticated_session(self):
-        """
-        Verify that the session is authenticated by checking for an authenticated element.
-        """
-        logging.info("Verifying authenticated session...")
-        try:
-            # Example selector for an authenticated element
-            AUTH_SELECTOR = 'img[alt="User Avatar"]'  # Adjust based on actual site
-            if await self.page.query_selector(AUTH_SELECTOR):
-                logging.info("Authenticated session confirmed via cookies.")
-            else:
-                logging.warning("Authenticated session not confirmed. Cookies may be invalid or expired.")
-                raise ValueError("Authentication verification failed.")
-        except Exception as e:
-            logging.error(f"Error during session verification: {e}")
-            await take_screenshot(self.page, "authentication_verification_error", self.folder_path)
-            raise
-
     async def scrape_topics(self) -> list:
         """
-        Scrape all the topics from the static section and return as a list of dictionaries.
+        Scrape all the topics from the news section and return as a list of dictionaries.
         Each dictionary contains 'Category', 'Topic', and 'Number of Posts'.
         """
         logging.info("Scraping topics from the news page...")
@@ -104,16 +54,20 @@ class XComScraper:
 
             for idx, trend in enumerate(trend_elements, start=1):
                 try:
+                    category_selector = self.selectors["trend_category"]
+                    topic_selector = self.selectors["trend_topic"]
+                    posts_selector = self.selectors["trend_posts"]
+
                     category = await trend.query_selector_eval(
-                        self.selectors["trend_category"],
+                        category_selector,
                         "element => element.textContent.trim()"
                     )
                     topic = await trend.query_selector_eval(
-                        self.selectors["trend_topic"],
+                        topic_selector,
                         "element => element.textContent.trim()"
                     )
                     posts = await trend.query_selector_eval(
-                        self.selectors["trend_posts"],
+                        posts_selector,
                         "element => element.textContent.trim()"
                     )
 
@@ -160,13 +114,6 @@ class XComScraper:
             logging.error(f"Failed to save topics to CSV: {e}")
             raise
 
-    async def close_browser(self):
-        """
-        Close the Playwright browser.
-        """
-        logging.info("Closing browser...")
-        await self.browser.close()
-
     async def perform_scraping(self):
         """
         Execute the complete scraping process.
@@ -175,28 +122,14 @@ class XComScraper:
             # Initialize screenshot folder
             self.folder_path = create_screenshot_folder(self.screenshots_dir)
 
-            # Start Playwright and setup browser with cookies
-            async with async_playwright() as p:
-                await self.setup_browser_with_cookies(p)
+            # Navigate to news page
+            await self.navigate_to_news_page()
 
-                # Navigate to news page
-                await self.navigate_to_news_page()
+            # Scrape topics
+            topics = await self.scrape_topics()
 
-                # Verify authenticated session
-                await self.verify_authenticated_session()
-
-                # Scrape topics
-                topics = await self.scrape_topics()
-
-                # Save topics to CSV
-                await self.save_topics_to_csv(topics)
+            # Save topics to CSV
+            await self.save_topics_to_csv(topics)
 
         except Exception as e:
             logging.error(f"Scraping process terminated due to an error: {e}")
-        finally:
-            # Ensure browser is closed regardless of success or failure
-            await self.close_browser()
-
-if __name__ == "__main__":
-    scraper = XComScraper()
-    asyncio.run(scraper.perform_scraping())

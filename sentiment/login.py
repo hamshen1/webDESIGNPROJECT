@@ -4,7 +4,7 @@ import os
 import asyncio
 import json
 import logging
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 from config import SELECTORS, X_USERNAME, X_PASSWORD, X_EMAIL, COOKIES_PATH, SCREENSHOTS_DIR
 from helpers import take_screenshot, create_screenshot_folder
 
@@ -14,34 +14,14 @@ class XComLoginScraper:
     It accommodates different authentication scenarios based on the presence of email verification.
     """
 
-    def __init__(self):
+    def __init__(self, page):
+        self.page = page
+        self.context = self.page.context
+        self.browser = self.context.browser
         self.selectors = SELECTORS
         self.cookies_path = COOKIES_PATH
         self.screenshots_dir = SCREENSHOTS_DIR
         self.folder_path = None
-        self.browser = None
-        self.context = None
-        self.page = None
-
-    async def setup_browser(self, playwright):
-        """
-        Initialize the Playwright browser and context, and load cookies if available.
-        """
-        self.browser = await playwright.chromium.launch(headless=True)
-        self.context = await self.browser.new_context()
-
-        # Load cookies to maintain session if cookies file exists
-        if os.path.exists(self.cookies_path):
-            logging.info("Loading cookies to maintain session...")
-            try:
-                with open(self.cookies_path, "r") as f:
-                    cookies = json.load(f)
-                    await self.context.add_cookies(cookies)
-                logging.info("Cookies loaded successfully.")
-            except Exception as e:
-                logging.error(f"Failed to load cookies: {e}")
-
-        self.page = await self.context.new_page()
 
     async def navigate_to_login_page(self):
         """
@@ -107,7 +87,6 @@ class XComLoginScraper:
         """
         logging.info("Determining if email authentication is required...")
         try:
-            # Use a short timeout to quickly determine presence
             email_input = await self.page.query_selector(self.selectors["email_input"])
             if email_input:
                 logging.info("Email authentication is required.")
@@ -177,10 +156,6 @@ class XComLoginScraper:
             await self.page.wait_for_selector(self.selectors["password_input"], timeout=15000)
             await self.page.fill(self.selectors["password_input"], X_PASSWORD)
             await take_screenshot(self.page, "password_entered", self.folder_path)
-
-            # Optional: Interact with the reveal password button if needed
-            # await self.page.click(self.selectors["password_reveal_button"])
-            # await take_screenshot(self.page, "password_revealed", self.folder_path)
         except PlaywrightTimeoutError:
             logging.error(f"Password input field '{self.selectors['password_input']}' not found.")
             await take_screenshot(self.page, "password_input_not_found", self.folder_path)
@@ -258,13 +233,6 @@ class XComLoginScraper:
             await take_screenshot(self.page, "save_cookies_error", self.folder_path)
             raise
 
-    async def close_browser(self):
-        """
-        Close the Playwright browser.
-        """
-        logging.info("Closing browser...")
-        await self.browser.close()
-
     async def perform_login(self):
         """
         Execute the complete login process, handling different authentication flows.
@@ -273,51 +241,31 @@ class XComLoginScraper:
             # Initialize screenshot folder
             self.folder_path = create_screenshot_folder(self.screenshots_dir)
 
-            # Start Playwright and setup browser
-            async with async_playwright() as p:
-                await self.setup_browser(p)
+            # Navigate to login page
+            await self.navigate_to_login_page()
 
-                # Navigate to login page
-                await self.navigate_to_login_page()
+            # Enter username and proceed
+            await self.enter_username()
+            await self.click_next_after_username()
 
-                # Enter username and proceed
-                await self.enter_username()
-                await self.click_next_after_username()
+            # Determine if email authentication is required
+            email_auth_required = await self.is_email_authentication_required()
 
-                # Determine if email authentication is required
-                email_auth_required = await self.is_email_authentication_required()
+            if email_auth_required:
+                await self.enter_email()
+                await self.click_next_after_email()
 
-                if email_auth_required:
-                    await self.enter_email()
-                    await self.click_next_after_email()
+            # Enter password
+            await self.enter_password()
 
-                # Enter password
-                await self.enter_password()
+            # Ensure 'Log in' button is enabled
+            await self.ensure_login_button_enabled()
 
-                # Ensure 'Log in' button is enabled
-                await self.ensure_login_button_enabled()
+            # Click 'Log in' button
+            await self.click_login_button()
 
-                # Click 'Log in' button
-                await self.click_login_button()
-
-                # Save cookies post-login
-                await self.save_cookies()
+            # Save cookies post-login
+            await self.save_cookies()
 
         except Exception as e:
             logging.error(f"Login process terminated due to an error: {e}")
-        finally:
-            # Ensure browser is closed regardless of success or failure
-            await self.close_browser()
-
-if __name__ == "__main__":
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler("scraper.log"),
-            logging.StreamHandler()
-        ]
-    )
-
-    scraper = XComLoginScraper()
-    asyncio.run(scraper.perform_login())
