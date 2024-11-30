@@ -1,11 +1,11 @@
 # helpers.py
 
 import os
-import json
 import logging
 from datetime import datetime
+from playwright.async_api import Page
 
-async def take_screenshot(page, step_name: str, folder_path: str):
+async def take_screenshot(page: Page, step_name: str, folder_path: str):
     """
     Take a screenshot and save it to the specified folder with a descriptive name.
     Ensures that the screenshot captures the full page content.

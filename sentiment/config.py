@@ -24,13 +24,16 @@ SELECTORS = {
     "password_input": 'input[autocomplete="current-password"]',
     "password_reveal_button": 'button[aria-label="Reveal password"]',  # Optional
     "login_button": 'button[data-testid="LoginForm_Login_Button"]',
-    "trend_container": 'div[data-testid="trend"]',
-    "trend_category": 'span:nth-of-type(1)',
-    "trend_topic": 'span:nth-of-type(2)',
-    "trend_posts": 'span:nth-of-type(3)'
+    "TREND_CONTAINER": 'div[aria-label="Timeline: Explore"]',
+    "TREND_ITEM": 'div[data-testid="trend"][role="link"]',
+    "GENRE": 'div[aria-labelledby^="id__"] > div > div > div > span.css-1jxf684',  # Adjusted for genre
+    "NAME": 'div[aria-labelledby^="id__"] > div > div > div > div > span.css-1jxf684:nth-child(2)',  # Adjusted for name
+
 }
 
 # Define file paths
 COOKIES_PATH = "cookies.json"
-SCREENSHOTS_DIR = "screenshots"
+SCREENSHOTS_DIR = os.path.join(os.getcwd(), "screenshots")
 LOG_FILE = "scraper.log"
+TOPICS_CSV = os.path.join(os.getcwd(), "topics.csv")
+TRENDING_URL = "https://x.com/explore/tabs/news"

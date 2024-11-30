@@ -1,12 +1,11 @@
 # login.py
 
 import os
-import asyncio
 import json
 import logging
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
-from config import SELECTORS, X_USERNAME, X_PASSWORD, X_EMAIL, COOKIES_PATH, SCREENSHOTS_DIR
-from helpers import take_screenshot, create_screenshot_folder
+from config import SELECTORS, X_USERNAME, X_PASSWORD, X_EMAIL, COOKIES_PATH
+from helpers import take_screenshot
 
 class XComLoginScraper:
     """
@@ -20,8 +19,7 @@ class XComLoginScraper:
         self.browser = self.context.browser
         self.selectors = SELECTORS
         self.cookies_path = COOKIES_PATH
-        self.screenshots_dir = SCREENSHOTS_DIR
-        self.folder_path = None
+        self.folder_path = None  # To be set externally
 
     async def navigate_to_login_page(self):
         """
@@ -31,6 +29,7 @@ class XComLoginScraper:
         try:
             await self.page.goto("https://x.com/i/flow/login", wait_until="networkidle")
             await take_screenshot(self.page, "login_page", self.folder_path)
+            logging.info("Login page loaded successfully.")
         except Exception as e:
             logging.error(f"Failed to navigate to login page: {e}")
             await take_screenshot(self.page, "login_page_error", self.folder_path)
@@ -52,6 +51,7 @@ class XComLoginScraper:
                 logging.error("Username was not entered correctly.")
                 await take_screenshot(self.page, "username_verification_failed", self.folder_path)
                 raise ValueError("Username verification failed.")
+            logging.info("Username entered and verified successfully.")
         except PlaywrightTimeoutError:
             logging.error(f"Username input field '{self.selectors['username_input']}' not found.")
             await take_screenshot(self.page, "username_input_not_found", self.folder_path)
@@ -71,6 +71,7 @@ class XComLoginScraper:
             await self.page.click(self.selectors["username_next_button"])
             await self.page.wait_for_timeout(3000)  # Wait for transition
             await take_screenshot(self.page, "after_username_next_click", self.folder_path)
+            logging.info("'Next' button clicked successfully after username.")
         except PlaywrightTimeoutError:
             logging.error(f"'Next' button '{self.selectors['username_next_button']}' not found or not clickable after username.")
             await take_screenshot(self.page, "next_button_after_username_not_found", self.folder_path)
@@ -119,6 +120,7 @@ class XComLoginScraper:
                 logging.error("Email was not entered correctly.")
                 await take_screenshot(self.page, "email_verification_failed", self.folder_path)
                 raise ValueError("Email verification failed.")
+            logging.info("Email entered and verified successfully.")
         except PlaywrightTimeoutError:
             logging.error(f"Email input field '{self.selectors['email_input']}' not found.")
             await take_screenshot(self.page, "email_input_not_found", self.folder_path)
@@ -138,6 +140,7 @@ class XComLoginScraper:
             await self.page.click(self.selectors["email_next_button"])
             await self.page.wait_for_timeout(3000)  # Wait for transition
             await take_screenshot(self.page, "after_email_next_click", self.folder_path)
+            logging.info("'Next' button clicked successfully after email.")
         except PlaywrightTimeoutError:
             logging.error(f"'Next' button '{self.selectors['email_next_button']}' not found or not clickable after email.")
             await take_screenshot(self.page, "next_button_after_email_not_found", self.folder_path)
@@ -156,6 +159,7 @@ class XComLoginScraper:
             await self.page.wait_for_selector(self.selectors["password_input"], timeout=15000)
             await self.page.fill(self.selectors["password_input"], X_PASSWORD)
             await take_screenshot(self.page, "password_entered", self.folder_path)
+            logging.info("Password entered successfully.")
         except PlaywrightTimeoutError:
             logging.error(f"Password input field '{self.selectors['password_input']}' not found.")
             await take_screenshot(self.page, "password_input_not_found", self.folder_path)
@@ -177,8 +181,7 @@ class XComLoginScraper:
                 logging.error("'Log in' button is disabled. Password may be incorrect or not properly entered.")
                 await take_screenshot(self.page, "login_button_disabled", self.folder_path)
                 raise ValueError("'Log in' button is disabled.")
-            else:
-                logging.info("'Log in' button is enabled.")
+            logging.info("'Log in' button is enabled.")
         except PlaywrightTimeoutError:
             logging.error(f"'Log in' button '{self.selectors['login_button']}' not found.")
             await take_screenshot(self.page, "login_button_not_found", self.folder_path)
@@ -197,6 +200,7 @@ class XComLoginScraper:
             await self.page.click(self.selectors["login_button"])
             await self.page.wait_for_load_state("networkidle")
             await take_screenshot(self.page, "after_login_click", self.folder_path)
+            logging.info("'Log in' button clicked successfully.")
         except PlaywrightTimeoutError:
             logging.error(f"'Log in' button '{self.selectors['login_button']}' not found or not clickable.")
             await take_screenshot(self.page, "login_button_not_clickable", self.folder_path)
@@ -238,8 +242,8 @@ class XComLoginScraper:
         Execute the complete login process, handling different authentication flows.
         """
         try:
-            # Initialize screenshot folder
-            self.folder_path = create_screenshot_folder(self.screenshots_dir)
+            # Removed the call to create_screenshot_folder
+            # Assume self.folder_path is already set externally
 
             # Navigate to login page
             await self.navigate_to_login_page()
@@ -269,3 +273,4 @@ class XComLoginScraper:
 
         except Exception as e:
             logging.error(f"Login process terminated due to an error: {e}")
+            raise
