@@ -23,7 +23,7 @@ async def main():
     folder_path = create_screenshot_folder(SCREENSHOTS_DIR)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.firefox.launch(headless=True)
         context = await browser.new_context()
         page = await context.new_page()
 
