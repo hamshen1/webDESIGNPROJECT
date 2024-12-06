@@ -1,3 +1,32 @@
+## READ FOR MACOS
+      You must create a twitter account if you already don't have one 
+
+      in create a .env file in sentiment
+      X_USERNAME=your_username
+      X_PASSWORD=your_password
+      X_EMAIL=your_email
+      ```
+
+      in terminal
+      python -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      playwright install
+
+      to run it, go into the sentiment folder in terminal and type: python combined.py to run the combined file
+## CUrrent State
+      right now, at least for me (Anthony) it used to "work," would log into twitter, but as it tried to reach the trending page, it logged out again.
+      But now, when i try to run it says "
+      File "/Users/anthonygerencher/webDESIGNPROJECT/sentiment/combined.py", line 6, in <module>
+         from login import XComLoginScraper
+      File "/Users/anthonygerencher/webDESIGNPROJECT/sentiment/login.py", line 7, in <module>
+         from config import SELECTORS, X_USERNAME, X_PASSWORD, X_EMAIL, COOKIES_PATH
+      File "/Users/anthonygerencher/webDESIGNPROJECT/sentiment/config.py", line 4, in <module>
+         from dotenv import load_dotenv
+      ModuleNotFoundError: No module named 'dotenv'
+
+      Good LUCK
+
 
 ## README.md
 
