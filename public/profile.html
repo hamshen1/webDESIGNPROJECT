@@ -1,130 +1,181 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>User Profile - YourNews</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-eOIpuBfS45VEnlOOXczIDWQI0hNWQ4EaKQSNXqap3ONjCWra9jxfjkdrsLeGMRoK" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      integrity="sha384-eOIpuBfS45VEnlOOXczIDWQI0hNWQ4EaKQSNXqap3ONjCWra9jxfjkdrsLeGMRoK"
+      crossorigin="anonymous"
+    />
     <!-- Google Fonts for Geometric Typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Montserrat:wght@600&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&family=Montserrat:wght@600&display=swap"
+      rel="stylesheet"
+    />
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <!-- Header Section -->
     <header>
-        <div class="container">
-            <div class="logo">
-                <h1>YourNews</h1>
-            </div>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="#">Topics</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <!-- Profile Icon -->
-                <div id="profile-icon" class="profile-icon">
-                    <a href="profile.html"><i class="fas fa-user-circle fa-2x"></i></a>
-                </div>
-                
-                <!-- Notification Bell -->
-                <div class="notification-bell">
-                    <a href="#"><i class="fas fa-bell"></i><span class="notification-count">3</span></a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="logo">
+          <h1>YourNews</h1>
         </div>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Topics</a></li>
+          </ul>
+        </nav>
+        <div class="header-actions">
+          <!-- Profile Icon -->
+          <div id="profile-icon" class="profile-icon">
+            <a href="profile.html"><i class="fas fa-user-circle fa-2x"></i></a>
+          </div>
+
+          <!-- Dark Mode -->
+          <button class="dark-mode-toggle" aria-label="Toggle dark mode">
+            <svg
+              class="sun-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <circle cx="12" cy="12" r="5"></circle>
+              <path
+                d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"
+              ></path>
+            </svg>
+            <svg
+              class="moon-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <!-- Notification Bell -->
+          <div class="notification-bell">
+            <a href="#"
+              ><i class="fas fa-bell"></i
+              ><span class="notification-count">3</span></a
+            >
+          </div>
+        </div>
+      </div>
     </header>
 
     <!-- Profile Content -->
     <main>
-        <section class="profile-section">
-            <div class="container">
-                <h2>Your Profile</h2>
-                <div class="profile-metrics">
-                    <div class="metric-card">
-                        <i class="fas fa-fire fa-2x"></i>
-                        <h3>Engagement Streak</h3>
-                        <p id="streak-count">0 Days</p>
-                    </div>
-                    <div class="metric-card">
-                        <i class="fas fa-award fa-2x"></i>
-                        <h3>Badges Earned</h3>
-                        <p id="badges-earned">0</p>
-                    </div>
-                    <div class="metric-card">
-                        <i class="fas fa-ranking-star fa-2x"></i>
-                        <h3>Ranking Position</h3>
-                        <p id="ranking-position">N/A</p>
-                    </div>
-                </div>
+      <section class="profile-section">
+        <div class="container">
+          <h2>Your Profile</h2>
+          <div class="profile-metrics">
+            <div class="metric-card">
+              <i class="fas fa-fire fa-2x"></i>
+              <h3>Engagement Streak</h3>
+              <p id="streak-count">0 Days</p>
             </div>
-        </section>
+            <div class="metric-card">
+              <i class="fas fa-award fa-2x"></i>
+              <h3>Badges Earned</h3>
+              <p id="badges-earned">0</p>
+            </div>
+            <div class="metric-card">
+              <i class="fas fa-ranking-star fa-2x"></i>
+              <h3>Ranking Position</h3>
+              <p id="ranking-position">N/A</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
     <!-- Footer Section -->
     <footer>
-        <div class="container">
-            <p>&copy; 2023 YourNews. All rights reserved.</p>
-        </div>
+      <div class="container">
+        <p>&copy; 2023 YourNews. All rights reserved.</p>
+      </div>
     </footer>
 
     <!-- Firebase Configuration and Authentication Script -->
     <script>
-        // TODO: Replace the below configuration with your Firebase project's config object
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            appId: "YOUR_APP_ID",
-            // ... other config properties
-        };
+      // TODO: Replace the below configuration with your Firebase project's config object
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        appId: "YOUR_APP_ID",
+        // ... other config properties
+      };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
 
-        // Profile Metrics Elements
-        const streakCount = document.getElementById('streak-count');
-        const badgesEarned = document.getElementById('badges-earned');
-        const rankingPosition = document.getElementById('ranking-position');
+      // Profile Metrics Elements
+      const streakCount = document.getElementById("streak-count");
+      const badgesEarned = document.getElementById("badges-earned");
+      const rankingPosition = document.getElementById("ranking-position");
 
-        // Monitor Authentication State
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                // Fetch and display user metrics
-                fetchUserMetrics(user.uid);
-            } else {
-                // Redirect to login page if not authenticated
-                window.location.href = 'index.html';
-            }
-        });
-
-        // Function to Fetch User Metrics from Firestore
-        function fetchUserMetrics(userId) {
-            db.collection('users').doc(userId).get()
-                .then((doc) => {
-                    if (doc.exists) {
-                        const data = doc.data();
-                        streakCount.textContent = data.engagementStreak ? `${data.engagementStreak} Days` : '0 Days';
-                        badgesEarned.textContent = data.badgesEarned ? data.badgesEarned.length : '0';
-                        rankingPosition.textContent = data.rankingPosition ? `#${data.rankingPosition}` : 'N/A';
-                    } else {
-                        console.log('No such document!');
-                        streakCount.textContent = '0 Days';
-                        badgesEarned.textContent = '0';
-                        rankingPosition.textContent = 'N/A';
-                    }
-                })
-                .catch((error) => {
-                    console.log('Error getting document:', error);
-                });
+      // Monitor Authentication State
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          // Fetch and display user metrics
+          fetchUserMetrics(user.uid);
+        } else {
+          // Redirect to login page if not authenticated
+          window.location.href = "index.html";
         }
+      });
+
+      // Function to Fetch User Metrics from Firestore
+      function fetchUserMetrics(userId) {
+        db.collection("users")
+          .doc(userId)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              streakCount.textContent = data.engagementStreak
+                ? `${data.engagementStreak} Days`
+                : "0 Days";
+              badgesEarned.textContent = data.badgesEarned
+                ? data.badgesEarned.length
+                : "0";
+              rankingPosition.textContent = data.rankingPosition
+                ? `#${data.rankingPosition}`
+                : "N/A";
+            } else {
+              console.log("No such document!");
+              streakCount.textContent = "0 Days";
+              badgesEarned.textContent = "0";
+              rankingPosition.textContent = "N/A";
+            }
+          })
+          .catch((error) => {
+            console.log("Error getting document:", error);
+          });
+      }
     </script>
-</body>
+    <script src="theme.js"></script>
+  </body>
 </html>

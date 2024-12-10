@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   line-height: 1.6;
   color: #333;
   background-color: #ffffff;
@@ -38,7 +38,7 @@ header .container {
 }
 
 .logo h1 {
-  font-family: 'Roboto Mono', monospace;
+  font-family: "Roboto Mono", monospace;
   font-size: 28px;
   color: #ffdd57;
   letter-spacing: 2px;
@@ -163,7 +163,7 @@ main {
 
 .headline-item:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .image-overlay {
@@ -236,7 +236,18 @@ main {
   text-transform: uppercase;
   letter-spacing: 1px;
   /* Angular pill shapes */
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 80% 100%, 70% 80%, 50% 100%, 30% 80%, 20% 100%, 0% 100%, 0% 0%);
+  clip-path: polygon(
+    0% 0%,
+    100% 0%,
+    100% 100%,
+    80% 100%,
+    70% 80%,
+    50% 100%,
+    30% 80%,
+    20% 100%,
+    0% 100%,
+    0% 0%
+  );
 }
 
 .topic-tag.finance {
@@ -293,11 +304,11 @@ main {
   width: 100%;
   height: 100%;
   background: repeating-linear-gradient(
-      45deg,
-      #ffffff,
-      #ffffff 10px,
-      #e0e0e0 10px,
-      #e0e0e0 20px
+    45deg,
+    #ffffff,
+    #ffffff 10px,
+    #e0e0e0 10px,
+    #e0e0e0 20px
   );
   opacity: 0.05;
   pointer-events: none;
@@ -345,7 +356,7 @@ footer p {
   max-width: 400px;
   border-radius: 0; /* Sharp edges */
   position: relative;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .close {
@@ -466,7 +477,7 @@ footer p {
 
 .metric-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .metric-card i {
@@ -489,15 +500,15 @@ footer p {
 /* Responsive Styles */
 @media (max-width: 992px) {
   .headlines-grid {
-      flex-direction: column;
+    flex-direction: column;
   }
 
   .headline-item {
-      flex: 1 1 100%;
+    flex: 1 1 100%;
   }
 
   nav .nav-links {
-      display: none;
+    display: none;
   }
 
   /* Mobile Navigation Toggle (Optional) */
@@ -506,31 +517,179 @@ footer p {
 
 @media (max-width: 768px) {
   .profile-metrics {
-      flex-direction: column;
-      align-items: center;
+    flex-direction: column;
+    align-items: center;
   }
 
   .metric-card {
-      width: 80%;
+    width: 80%;
   }
 }
 
 @media (max-width: 600px) {
   .logo h1 {
-      font-size: 24px;
+    font-size: 24px;
   }
 
   .topic-tag {
-      padding: 8px 15px;
-      font-size: 12px;
+    padding: 8px 15px;
+    font-size: 12px;
   }
 
   .headline-item h3 {
-      font-size: 18px;
+    font-size: 18px;
   }
 
   .modal-content {
-      width: 95%;
-      margin: 20% auto;
+    width: 95%;
+    margin: 20% auto;
   }
+}
+
+/* Dark Mode Variables - Light Theme (default) */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f0f4f8;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --border-color: #dddddd;
+  --header-gradient-start: #004e92;
+  --header-gradient-end: #000428;
+  --card-bg: #ffffff;
+}
+
+/* Dark Theme Variables */
+:root.dark-mode {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --border-color: #404040;
+  --header-gradient-start: #000428;
+  --header-gradient-end: #004e92;
+  --card-bg: #333333;
+}
+
+/* Apply variables to existing styles */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+header {
+  background: linear-gradient(
+    135deg,
+    var(--header-gradient-start),
+    var(--header-gradient-end)
+  );
+}
+
+.top-headlines,
+.misc-content {
+  background-color: var(--bg-secondary);
+}
+
+.headline-item,
+.stock-data,
+.metric-card {
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+.headline-item h3 {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.current-topics {
+  background-color: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-primary);
+}
+
+p,
+span {
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--link-color);
+}
+
+.headline-item h3,
+.top-headlines h2,
+.current-topics h2,
+.misc-content h2,
+.profile-section h2 {
+  color: var(--text-primary);
+}
+
+.stock-data p {
+  color: var(--text-secondary);
+}
+
+.modal-content {
+  background-color: var(--card-bg);
+  color: var(--text-primary);
+}
+
+.modal-content p {
+  color: var(--text-secondary);
+}
+
+.modal-content input {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+/* Dark Mode Toggle Styles */
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  margin-right: 15px;
+}
+
+.dark-mode-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode-toggle svg {
+  color: #fff;
+  transition: transform 0.5s;
+}
+
+.dark-mode-toggle .moon-icon {
+  display: none;
+}
+
+.dark-mode .dark-mode-toggle .sun-icon {
+  display: none;
+}
+
+.dark-mode .dark-mode-toggle .moon-icon {
+  display: block;
 }
